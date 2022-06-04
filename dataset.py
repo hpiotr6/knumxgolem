@@ -99,21 +99,22 @@ class Tripplet(Dataset):
 if __name__ == "__main__":
     IMAGE_HEIGHT = 224
     IMAGE_WIDTH = 224
-    transform = A.Compose(
+    transform_Gauss = A.Compose(
         [
-            # A.Resize(height=IMAGE_HEIGHT, width=IMAGE_WIDTH),
-            A.RandomCrop(height=IMAGE_HEIGHT, width=IMAGE_WIDTH, always_apply=True),
-            A.Rotate(limit=35, p=1.0),
-            A.ToGray(always_apply=True),
-            A.Normalize(),
-            ToTensorV2(),
+            A.Resize(height=IMAGE_HEIGHT, width=IMAGE_WIDTH),
+            A.Rotate(p=0.5),
+            A.Transpose(p=0.5),
+            A.OpticalDistortion(p=0.5),
+            A.Lambda(p=0.5),
+            A.Blur(blur_limit=7, p=0.5),
+            # A.Perspective(p=1)
         ]
     )
 
     ref_dataset = ReferenceDataset(
         img_dir="cropped_ref",
         annotations_file_path="ref1_merged_with_crops.csv",
-        transform=transform,
+        transform=transform_Gauss,
     )
     # print(ref_dataset[0])
 
