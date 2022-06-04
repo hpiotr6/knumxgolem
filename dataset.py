@@ -7,14 +7,8 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 import cv2 as cv
 
-import albumentations as A
-from albumentations.pytorch import ToTensorV2
-
-# ref1_merged = pd.read_csv("ref1_merged_with_crops.csv")
-
 
 class ReferenceDataset(Dataset):
-    # TODO transforms
     def __init__(self, img_dir, annotations_file_path, transform=None):
         self.transform = transform
         self.img_dir = img_dir
@@ -62,7 +56,7 @@ class Tripplet(Dataset):
         return len(self.triplets)
 
     def __getitem__(self, idx):
-        return self.triplets[idx]
+        return (self.dataset[i] for i in self.triplets[idx])
 
     @staticmethod
     def _gen_triplets(labels_group_ind):
@@ -75,14 +69,7 @@ class Tripplet(Dataset):
             for idx in indices:
                 inds_cp = indices.copy()
                 inds_cp.remove(idx)
-                # print(inds_cp)
-                # if len(inds_cp)==0:
-                #     print(class_idx, indices)
-                #     continue
                 same_class_idx = random.choice(inds_cp)
-                # print(same_class_idx)
-                # # print(same_class_idx)
-                # # print(idx,inds_cp)
                 sample_class = random.choice(class_inds_without_current)
                 other_class_idx = random.choice(labels_group_ind[sample_class])
                 triplets.append([idx, same_class_idx, other_class_idx])
@@ -94,29 +81,3 @@ class Tripplet(Dataset):
         assert len(triplets) == len(flatten_vals)  # utrata danych mordko
 
         return triplets
-
-
-if __name__ == "__main__":
-    IMAGE_HEIGHT = 224
-    IMAGE_WIDTH = 224
-    transform_Gauss = A.Compose(
-        [
-            A.Resize(height=IMAGE_HEIGHT, width=IMAGE_WIDTH),
-            A.Rotate(p=0.5),
-            A.Transpose(p=0.5),
-            A.OpticalDistortion(p=0.5),
-            A.Lambda(p=0.5),
-            A.Blur(blur_limit=7, p=0.5),
-            # A.Perspective(p=1)
-        ]
-    )
-
-    ref_dataset = ReferenceDataset(
-        img_dir="cropped_ref",
-        annotations_file_path="ref1_merged_with_crops.csv",
-        transform=transform_Gauss,
-    )
-    # print(ref_dataset[0])
-
-    triplet_dataset = Tripplet(ref_dataset)
-    # print(triplet_dataset[0])
