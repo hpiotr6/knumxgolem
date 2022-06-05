@@ -37,7 +37,7 @@ model = torchvision.models.resnext50_32x4d(pretrained=True)
 model.fc = torch.nn.Identity()
 for param in model.parameters():
     param.requires_grad = False
-for param in model.layer4[2].paramaters():
+for param in model.layer4[2].parameters():
     param.requires_grad = True
 
 model = model.to(device)
