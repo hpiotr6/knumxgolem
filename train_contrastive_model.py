@@ -303,15 +303,5 @@ torch.cuda.empty_cache()
 
 torch.save(model.state_dict(), os.path.join(path, "vit.pth"))
 
-x = torch.rand(1,3,224,224)
-x_pos = torch.rand(1,3,224,224)
-x_neg = torch.rand(1,3,224,224)
-x_embedding = model(x)
-pos_embedding = model(x)
-neg_embedding = model(x_neg)
-triplet_loss = criterion(x_embedding, pos_embedding, neg_embedding)
-
-triplet_loss.item()
-
 model_inception = torchvision.models.inception_v3(pretrained=True)
 
