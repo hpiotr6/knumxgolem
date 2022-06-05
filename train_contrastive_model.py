@@ -20,6 +20,14 @@ import cv2 as cv
 from skimage import io
 import torch.optim as optim
 
+seed = 42
+torch.manual_seed(seed)
+import random
+random.seed(seed)
+import numpy as np
+np.random.seed(seed)
+torch.use_deterministic_algorithms(True)
+
 path = 'datas'
 loss = torch.nn.MSELoss()
 criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss, margin=0.5)
