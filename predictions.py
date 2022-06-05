@@ -155,16 +155,16 @@ if __name__ == '__main__':
     IMAGE_HEIGHT = 224
     IMAGE_WIDTH = 224
 
-    #path_ref_images = os.path.join('datas', "cropped_ref")
-    #path_ref_csv = os.path.join('datas', "ref1_merged_with_crops.csv")
-    path_ref_images = os.path.join(path, "reference_images_part2")
-    path_ref_csv = os.path.join(path, "reference_images_part2.csv")
+    path_ref_images = os.path.join('datas', "cropped_ref")
+    path_ref_csv = os.path.join('datas', "ref1_merged_with_crops.csv")
+    #path_ref_images = os.path.join(path, "reference_images_part2")
+    #path_ref_csv = os.path.join(path, "reference_images_part2.csv")
 
-    path_val_images = os.path.join(path, "images_part2_test") # images_part2_test
-    path_val_csv = os.path.join(path, "images_part2_test.csv") # images_part2_test.csv
+    path_val_images = os.path.join(path, "images_part1_test") # images_part2_test
+    path_val_csv = os.path.join(path, "images_part1_test.csv") # images_part2_test.csv
 
-    #PATH = 'datas/solution_images_part1_valid.json'  # prob change path here
-    PATH = 'datas/solution_images_part2_valid.json'  # prob change path here
+    PATH = 'datas/solution_images_part1_valid.json'  # prob change path here
+    #PATH = 'datas/solution_images_part2_valid.json'  # prob change path here
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -227,7 +227,7 @@ if __name__ == '__main__':
     print(val_dataset.annotations.shape)
     print(preds)
 
-    with open('public_evaluation/images_part2_test_public.json') as json_data:
+    with open('public_evaluation/images_part1_test_public.json') as json_data:
         data = json.load(json_data)
     annotations = data['annotations']
     for i in range(len(preds)):
