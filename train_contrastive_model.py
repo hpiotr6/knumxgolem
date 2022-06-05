@@ -49,7 +49,7 @@ for param in model.layer4[2].parameters():
 
 model = model.to(device)
 
-optimizer = optim.Adam(model.parameters(), lr=0.001)
+optimizer = optim.Adam(model.parameters(), lr=0.0001)
 
 class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
