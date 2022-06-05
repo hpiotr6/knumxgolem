@@ -1,7 +1,5 @@
 import os
 
-path = 'datas'
-
 import albumentations as A
 import torchvision
 from albumentations.pytorch import ToTensorV2
@@ -146,6 +144,10 @@ transform_Gauss = A.Compose(
     ]
 )
 
+path = 'datas'
+loss = torch.nn.MSELoss()
+criterion = nn.TripletMarginWithDistanceLoss(distance_function=loss)
+
 ref_dataset = ReferenceDataset(
     img_dir=os.path.join(path, "cropped_ref"),
     annotations_file_path=os.path.join(path, "ref1_merged_with_crops.csv"),
@@ -168,15 +170,13 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
 """<h1>Training model</h1>"""
+import torch.optim as optim
 
 model = torchvision.models.vit_b_16(pretrained=True)
 model.heads.head = nn.Identity()
 model = model.to(device)
-
-import torch.optim as optim
-
-criterion = nn.TripletMarginLoss()
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
@@ -301,9 +301,8 @@ print(len(val_dataset))
 
 dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
 dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
-distance = torch.nn.MSELoss()
 
-eval_args = (model, dataloader_ref, dataloader_val, distance)
+eval_args = (model, dataloader_ref, dataloader_val, loss)
 eval_kwargs = {'aug_ref': None, 'aug_times': 0}
 train_model(model, dataloader, optimizer, criterion, n_epochs=10,
 eval_args=eval_args, eval_kwargs=eval_kwargs)
