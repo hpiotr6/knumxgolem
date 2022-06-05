@@ -42,7 +42,7 @@ class ReferenceDataset(Dataset):
             except:
                 valid_indices.append(False)
         print('Deleted imaages:', len(valid_indices) - sum(valid_indices))
-        self.annotations_row = self.annotations_row[pd.Series(valid_indices)]
+        self.annotations = self.annotations[pd.Series(valid_indices)]
 
 
     def __len__(self):
