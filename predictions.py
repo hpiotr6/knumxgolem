@@ -213,9 +213,9 @@ if __name__ == '__main__':
         acc = evaluate_dataset(*eval_args, **eval_kwargs)
         print('Before training accuracy:', acc.item())
 
-        preds = predict_dataset(model, dataloader_ref, dataloader_val, loss, aug_ref=None, aug_times=0)
+        preds, _ = predict_dataset(model, dataloader_ref, dataloader_val, loss, aug_ref=None, aug_times=0)
 
-    print(dataloader_val.annotations)
+    print(val_dataset.annotations.shape)
     print(preds)
     import json
 
