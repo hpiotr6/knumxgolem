@@ -53,7 +53,6 @@ class ValDataset(Dataset):
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
         self._filter_annotations()
-        self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
 
     def _filter_annotations(self):
