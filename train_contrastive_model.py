@@ -228,8 +228,11 @@ def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=No
     acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
     return acc
 
-def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10):
-  #epoch_num = 10
+def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, eval_args=None, eval_kwargs=None):
+  if eval_args is not None:
+    acc = evaluate_dataset(*eval_args, **eval_kwargs)
+    print('Before training accuracy:', acc)
+
   for i in range(n_epochs):
       running_loss = 0.0
       for imgs, _ in dataloader:
@@ -254,6 +257,9 @@ def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10):
           running_loss += triplet_loss.item()
 
       print(f"Epoch: {i} loss: {running_loss/len(dataloader)}")
+      if eval_args is not None:
+        acc = evaluate_dataset(*eval_args, **eval_kwargs)
+        print('accuracy:', acc)
 
 '''
 noise_pos = torch.rand(4, 3, 224, 224)
@@ -261,7 +267,7 @@ dataloader = [((noise_pos, noise_pos + torch.rand(4, 3, 224, 224) * 0.2,
               torch.rand(4, 3, 224, 224) * 1.2), torch.rand(4,))]
 '''
 
-#train_model(model, dataloader, optimizer, criterion, n_epochs=1)
+#train_model(model, dataloader, optimizer, criterion, n_epochs=10)
 
 transform_ref = A.Compose(
     [
@@ -297,12 +303,12 @@ dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
 dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
 distance = torch.nn.MSELoss()
 
-acc = evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
-print('accuracy:', acc)
-
-torch.cuda.empty_cache()
+eval_args = (model, dataloader_ref, dataloader_val, distance)
+eval_kwargs = {'aug_ref': None, 'aug_times': 0}
+train_model(model, dataloader, optimizer, criterion, n_epochs=10,
+eval_args=eval_args, eval_kwargs=eval_kwargs)
 
 torch.save(model.state_dict(), os.path.join(path, "vit.pth"))
 
-model_inception = torchvision.models.inception_v3(pretrained=True)
+#model_inception = torchvision.models.inception_v3(pretrained=True)
 
