@@ -6,6 +6,7 @@ from albumentations.pytorch import ToTensorV2
 import albumentations as A
 import pandas as pd
 from skimage import io
+import cv2 as cv
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
@@ -178,13 +179,6 @@ if __name__ == '__main__':
         ToTensorV2(),
     ]
 )
-
-    ref_dataset = ReferenceDataset(
-    img_dir=os.path.join(path, "cropped_ref"),
-    annotations_file_path=os.path.join(path, "ref1_merged_with_crops.csv"),
-    transform=transform_ref,
-)
-    print(len(ref_dataset))
 
     ref_dataset = ReferenceDataset(
         img_dir=path_ref_images,
