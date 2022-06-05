@@ -114,7 +114,7 @@ class ValDataset(Dataset):
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
         length = len(self.annotations)
-        self.annotations = self.annotations[self.annotations["area"] > 1000]
+        self.annotations = self.annotations[self.annotations["area"] > 2000]
         print(f'Dropped {length - len(self.annotations)} as anomalies')
         #self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
