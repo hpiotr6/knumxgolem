@@ -196,17 +196,13 @@ def matplotlib_imshow(img, one_channel=False):
 IMAGE_HEIGHT = 224
 IMAGE_WIDTH = 224
 transform_Gauss = A.Compose([   
+        A.Resize(height=IMAGE_HEIGHT, width=IMAGE_WIDTH),
         A.Rotate(p=0.5),
         A.Transpose(p=0.5),
         A.OpticalDistortion(p=0.5),
         A.Lambda(p=0.5),
         A.Blur(blur_limit=7, p=0.5),
-        A.Perspective(p=0.5),
-        A.GaussNoise(var_limit=(10.0, 50.0), mean=50, always_apply=False, p=0.5),
-        A.HueSaturationValue(hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=20, always_apply=False, p=0.5),
-        A.RandomFog(p=0.5),
-        A.RandomToneCurve(scale=0.1, always_apply=False, p=0.5),
-        A.Resize(height=224, width=224),
+        # A.Perspective(p=1)
         A.Normalize(),
         ToTensorV2(),
     ])
