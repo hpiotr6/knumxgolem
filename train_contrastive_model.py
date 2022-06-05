@@ -1,6 +1,7 @@
 import os
 
 path = 'datas'
+K = 3
 
 import albumentations as A
 import torchvision
@@ -186,7 +187,11 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   predicted_labels = []
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    predicted_labels.append(labels_ref[torch.argmin(distances)])
+    vals, indices = torch.topk(distances, largest=False)
+    labels_ref = labels_ref[indices]
+
+    pred_label = torch.mean(vals / sum(vals) * labels_ref)
+    predicted_labels.append(pred_label)
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
