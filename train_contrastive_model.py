@@ -256,6 +256,7 @@ def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, 
   for i in range(n_epochs):
       running_loss = 0.0
       for imgs, _ in dataloader:
+          optimizer.zero_grad()
           x, x_pos, x_neg = imgs
           x = x.to(device)
           x_pos = x_pos.to(device)
@@ -274,7 +275,6 @@ def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, 
           triplet_loss = criterion(x_embedding, pos_embedding, neg_embedding)
           triplet_loss.backward()
           optimizer.step()
-          optimizer.zero_grad()
           running_loss += triplet_loss.item()
 
       print(f"Epoch: {i} loss: {running_loss/len(dataloader)}")
