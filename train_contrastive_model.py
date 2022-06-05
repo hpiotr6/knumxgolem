@@ -26,7 +26,7 @@ import random
 random.seed(seed)
 import numpy as np
 np.random.seed(seed)
-torch.use_deterministic_algorithms(True)
+#torch.use_deterministic_algorithms(True)
 
 path = 'datas'
 loss = torch.nn.MSELoss()
