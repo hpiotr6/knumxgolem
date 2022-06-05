@@ -21,7 +21,7 @@ from skimage import io
 import torch.optim as optim
 
 path = 'datas'
-loss = torch.nn.MAELoss()
+loss = torch.nn.L1Loss()
 criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
