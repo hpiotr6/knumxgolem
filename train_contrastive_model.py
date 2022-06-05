@@ -102,9 +102,8 @@ class ReferenceDataset(Dataset):
     def __init_labels_group(self):
         return (
             self.annotations.reset_index()
-            .groupby(by="category_id")["index"]
+            .groupby("category_id")["index"]
             .apply(list)
-            .reset_index(name="category_indices")["category_indices"]
             .to_dict()
         )
 
@@ -218,9 +217,6 @@ ref_dataset = ReferenceDataset(
     transform=transform_Gauss,
 )
 
-pairs = [_ for _ in ref_dataset]
-print('ref pairs:', len(pairs))
-
 triplet_dataset = Tripplet(ref_dataset)
 x, labels = triplet_dataset[0]
 # matplotlib_imshow(x[0])
@@ -240,26 +236,27 @@ import torchvision
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
 
-def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
+def get_predictions(ref_dict, embeddings_val, labels_ref, distance):
   # also works for predicting only a batch - can be used during training
   predicted_labels = []
   for emb_val in embeddings_val:
-    distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    predicted_labels.append(labels_ref[torch.argmin(distances)])
+    distances = {k: distance(emb_val, representant) for k, representant in ref_dict.items()}
+    predicted_label = max(distances, key=distances.get)
+
+    #distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
+    #predicted_labels.append(labels_ref[torch.argmin(distances)])
+    predicted_labels.append(predicted_label)
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
-    embeddings_ref = []
-    labels_ref = []
-    for imgs, labels in dataloader_ref:
-        imgs = imgs.to(device)
-        embeddings_ref.extend(model(imgs).detach().cpu())
-        labels_ref.extend(labels)
-
-        if aug_ref is not None:
-            embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
-            labels_ref.extend(list(labels) * aug_times)
+    embeddings = [model(p[0].to(device)) for p in ref_dataset]
+    labels_ref = [p[1] for p in ref_dataset]
+    unique_labels = set(labels_ref)
+    ref_dict = {}
+    for label in unique_labels:
+        embeds = [embd for lab, embd in zip(labels_ref, embeddings) if lab == label]
+        ref_dict[label] = torch.mean(embeds).detach().cpu()
 
     embeddings_val = []
     labels_val = []
@@ -268,7 +265,7 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
         embeddings_val.extend(model(imgs).detach().cpu())
         labels_val.extend(labels)
 
-    return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
+    return get_predictions(ref_dict, embeddings_val, labels_ref, distance), labels_val
 
 def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
