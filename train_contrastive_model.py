@@ -216,8 +216,10 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
     embeddings_val.extend(model(imgs).detach().cpu())
     labels_val.extend(labels)
 
+  print('length:', len(labels_ref))
   return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
 
+'''
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
   if aug_times > 0:
     batch_ref = torch.cat([batch_ref, get_augmented_embeddings(model, batch_ref, aug_ref, aug_times=0)])
@@ -229,6 +231,7 @@ def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance
   predictions = get_predictions(embeddings_ref, embeddings_val, labels_ref, distance)
   acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
   return acc
+'''
 
 def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
