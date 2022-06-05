@@ -222,6 +222,7 @@ if __name__ == '__main__':
         #print('Before training accuracy:', acc.item())
 
         preds, _ = predict_dataset(model, dataloader_ref, dataloader_val, loss, aug_ref=None, aug_times=0)
+        preds = [p.item() for p in preds]
 
     print(val_dataset.annotations.shape)
     print(preds)
