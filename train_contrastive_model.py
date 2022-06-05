@@ -34,7 +34,24 @@ class ReferenceDataset(Dataset):
         self.transform = transform
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
+
+        self.delete_invalid()
+
         self.labels_group_ind = self.__init_labels_group()
+
+    def delete_invalid(self):
+        valid_indices = []
+        for i in range(len(self.annotations)):
+            annotations_row = self.annotations.iloc[i]
+            img_path = os.path.join(self.img_dir, annotations_row["crop_file_name"])
+            try:
+                image = io.imread(img_path)
+                valid_indices.append(True)
+            except:
+                valid_indices.append(False)
+        print('Deleted imaages:', len(valid_indices) - sum(valid_indices))
+        self.annotations_row = self.annotations_row[pd.Series(valid_indices)]
+
 
     def __len__(self):
         return len(self.annotations)
