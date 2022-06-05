@@ -248,7 +248,7 @@ def get_predictions(ref_dict, embeddings_val, labels_ref, distance):
     predicted_labels.append(predicted_label)
   return predicted_labels
 
-def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
+def predict_dataset(model, ref_dataset, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
     print(type(ref_dataset), len(ref_dataset))
     embeddings = [model(p[0].to(device)) for p in ref_dataset]
