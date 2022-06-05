@@ -187,7 +187,7 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   predicted_labels = []
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    vals, indices = torch.topk(distances, K, largest=False)
+    vals, indices = torch.topk(distances, K, largest=True)
     pred_label = torch.index_select(labels_ref, 0, indices)
 
     pred_label = torch.mean(vals / sum(vals) * pred_label)
@@ -196,25 +196,26 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
-  embeddings_ref = []
-  labels_ref = []
-  for imgs, labels in dataloader_ref:
-    imgs = imgs.to(device)
-    embeddings_ref.extend(model(imgs).detach().cpu())
-    labels_ref.extend(labels)
+  with torch.no_grad():
+    embeddings_ref = []
+    labels_ref = []
+    for imgs, labels in dataloader_ref:
+        imgs = imgs.to(device)
+        embeddings_ref.extend(model(imgs).detach().cpu())
+        labels_ref.extend(labels)
 
-    if aug_ref is not None:
-      embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
-      labels_ref.extend(list(labels) * aug_times)
+        if aug_ref is not None:
+            embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
+            labels_ref.extend(list(labels) * aug_times)
 
-  embeddings_val = []
-  labels_val = []
-  for imgs, labels in dataloader_val:
-    imgs = imgs.to(device)
-    embeddings_val.extend(model(imgs).detach().cpu())
-    labels_val.extend(labels)
+    embeddings_val = []
+    labels_val = []
+    for imgs, labels in dataloader_val:
+        imgs = imgs.to(device)
+        embeddings_val.extend(model(imgs).detach().cpu())
+        labels_val.extend(labels)
 
-  return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
+    return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
 
 '''
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
