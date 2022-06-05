@@ -188,11 +188,9 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
     vals, indices = torch.topk(distances, K, largest=False)
-    print(indices)
-    print(labels_ref)
-    labels_ref = torch.index_select(labels_ref, 0, indices)
+    pred_label = torch.index_select(labels_ref, 0, indices)
 
-    pred_label = torch.mean(vals / sum(vals) * labels_ref)
+    pred_label = torch.mean(vals / sum(vals) * pred_label)
     pred_label = torch.round(pred_label)
     predicted_labels.append(pred_label)
   return predicted_labels
@@ -216,7 +214,6 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
     embeddings_val.extend(model(imgs).detach().cpu())
     labels_val.extend(labels)
 
-  print('length:', len(labels_ref))
   return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
 
 '''
