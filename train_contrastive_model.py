@@ -185,11 +185,21 @@ def get_augmented_embeddings(model, images, aug, aug_times=0):
 def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   # also works for predicting only a batch - can be used during training
   predicted_labels = []
+  print('shape:', labels_ref.shape)
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    vals, indices = torch.topk(distances, K, largest=True)
+    vals, indices = torch.topk(distances, K, largest=False)
     pred_label = torch.index_select(labels_ref, 0, indices)
 
+    print(vals)
+    print(indices)
+    print()
+    print(sum(vals))
+    print(vals / sum(vals))
+    print(pred_label)
+
+    print(torch.mean(vals / sum(vals) * pred_label))
+    print(torch.round(torch.mean(vals / sum(vals) * pred_label)))
     pred_label = torch.mean(vals / sum(vals) * pred_label)
     pred_label = torch.round(pred_label)
     predicted_labels.append(pred_label)
