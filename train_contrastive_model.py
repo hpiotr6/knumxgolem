@@ -204,7 +204,7 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
   embeddings_val = []
   for imgs, labels in dataloader_val:
     imgs = imgs.to(device)
-    embeddings_val.extend(model(imgs).detach().cuda())
+    embeddings_val.extend(model(imgs).detach().cpu())
 
   return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance)
 
