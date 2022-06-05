@@ -108,6 +108,40 @@ class ReferenceDataset(Dataset):
             .to_dict()
         )
 
+class ValDataset(Dataset):
+    def __init__(self, img_dir, annotations_file_path, transform=None):
+        self.transform = transform
+        self.img_dir = img_dir
+        self.annotations = pd.read_csv(annotations_file_path)
+        length = len(self.annotations)
+        self.annotations["area"][self.annotations["area"] > 1000]
+        print(f'Dropped {length - len(self.annotations)} as anomalies')
+        self.annotations[transform]
+        self.labels_group_ind = self.__init_labels_group()
+
+    def __len__(self):
+        return len(self.annotations)
+
+    def __getitem__(self, idx):
+        annotations_row = self.annotations.iloc[idx]
+        img_path = os.path.join(self.img_dir, annotations_row["crop_file_name"])
+        label = annotations_row["category_id"]
+        image = cv.imread(img_path)
+
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        if self.transform:
+            image = self.transform(image=image)["image"]
+        return image, label
+
+    def __init_labels_group(self):
+        return (
+            self.annotations.reset_index()
+            .groupby(by="category_id")["index"]
+            .apply(list)
+            .reset_index(name="category_indices")["category_indices"]
+            .to_dict()
+        )
+
 
 class Tripplet(Dataset):
     def __init__(self, dataset) -> None:
@@ -231,18 +265,6 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
 
     return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
 
-def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
-  if aug_times > 0:
-    batch_ref = torch.cat([batch_ref, get_augmented_embeddings(model, batch_ref, aug_ref, aug_times=0)])
-    labels_ref = torch.cat([labels_ref, list(labels_ref) * aug_times])
-
-  embeddings_ref = model(batch_ref)
-  embeddings_val = model(batch_val)
-
-  predictions = get_predictions(embeddings_ref, embeddings_val, labels_ref, distance)
-  acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
-  return acc
-
 def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
     predictions, labels_val = predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
@@ -318,7 +340,7 @@ transform_val = A.Compose(
     ]
 )
 
-val_dataset = ReferenceDataset(
+val_dataset = ValDataset(
     img_dir=os.path.join(path, "cropped_val"),
     annotations_file_path=os.path.join(path, "val_merged_with_crops.csv"),
     transform=transform_val,
