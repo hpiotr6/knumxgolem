@@ -29,10 +29,11 @@ print(device)
 
 #model = torchvision.models.vit_b_16(pretrained=True)
 #model.heads.head = torch.nn.Identity()
-#model = model.to(device)
 
 model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b0', pretrained=True)
 model.classifier.fc = torch.nn.Identity()
+
+model = model.to(device)
 
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
