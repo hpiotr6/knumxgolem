@@ -203,8 +203,8 @@ if __name__ == '__main__':
     )
     print(len(val_dataset))
 
-    dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
-    dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
+    dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=False)
+    dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=False)
 
     eval_args = (model, dataloader_ref, dataloader_val, loss)
     eval_kwargs = {'aug_ref': None, 'aug_times': 0}
