@@ -116,7 +116,7 @@ class ValDataset(Dataset):
         length = len(self.annotations)
         self.annotations["area"][self.annotations["area"] > 1000]
         print(f'Dropped {length - len(self.annotations)} as anomalies')
-        self.annotations[transform]
+        #self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
 
     def __len__(self):
