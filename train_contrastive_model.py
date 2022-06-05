@@ -18,10 +18,23 @@ from PIL import Image
 from torch.utils.data import Dataset, DataLoader
 import cv2 as cv
 from skimage import io
+import torch.optim as optim
 
 path = 'datas'
-loss = torch.nn.MSELoss()
+loss = torch.nn.MAELoss()
 criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss)
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(device)
+
+#model = torchvision.models.vit_b_16(pretrained=True)
+#model.heads.head = torch.nn.Identity()
+#model = model.to(device)
+
+model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b0', pretrained=True)
+model.classifier.fc = torch.nn.Identity()
+
+optimizer = optim.Adam(model.parameters(), lr=0.001)
 
 class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
@@ -166,17 +179,9 @@ import torch.nn as nn
 import numpy as np
 import torchvision
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-print(device)
+
 
 """<h1>Training model</h1>"""
-import torch.optim as optim
-
-model = torchvision.models.vit_b_16(pretrained=True)
-model.heads.head = nn.Identity()
-model = model.to(device)
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
