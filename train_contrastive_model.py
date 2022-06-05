@@ -165,7 +165,7 @@ import numpy as np
 import torchvision
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-device
+print(device)
 
 """<h1>Training model</h1>"""
 
