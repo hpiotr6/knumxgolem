@@ -117,7 +117,7 @@ class ValDataset(Dataset):
         
         self._filter_annotations()
         
-        self.annotations[transform]
+        #self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
 
     def _filter_annotations(self):
