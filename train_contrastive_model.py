@@ -193,7 +193,9 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
 
     print(distances)
     print(labels_ref)
-    torch.index_select(distances, 0, indices)
+    print('='*50)
+    print(indices)
+    print(torch.index_select(distances, 0, indices))
 
     print('='*50)
 
