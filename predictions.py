@@ -154,8 +154,12 @@ if __name__ == '__main__':
     path = 'cropped_images'
     IMAGE_HEIGHT = 224
     IMAGE_WIDTH = 224
-    path_ref_images = os.path.join(path, "reference_images_part2")
-    path_ref_csv = os.path.join(path, "reference_images_part2.csv")
+
+    path_ref_images = os.path.join('datas', "cropped_ref")
+    path_ref_csv = os.path.join('datas', "ref1_merged_with_crops.csv")
+    #path_ref_images = os.path.join(path, "reference_images_part2")
+    #path_ref_csv = os.path.join(path, "reference_images_part2.csv")
+
     path_val_images = os.path.join(path, "images_part1_test") # images_part2_test
     path_val_csv = os.path.join(path, "images_part1_test.csv") # images_part2_test.csv
 
