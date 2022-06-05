@@ -20,6 +20,14 @@ import cv2 as cv
 from skimage import io
 import torch.optim as optim
 
+seed = 42
+torch.manual_seed(seed)
+import random
+random.seed(seed)
+import numpy as np
+np.random.seed(seed)
+#torch.use_deterministic_algorithms(True)
+
 path = 'datas'
 loss = torch.nn.MSELoss()
 criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss, margin=0.5)
@@ -279,7 +287,7 @@ def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=No
     acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
     return acc
 
-def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, eval_args=None, eval_kwargs=None):
+def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=3, eval_args=None, eval_kwargs=None):
   model.eval()
   if eval_args is not None:
     acc = evaluate_dataset(*eval_args, **eval_kwargs)
@@ -361,7 +369,7 @@ dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
 
 eval_args = (model, dataloader_ref, dataloader_val, loss)
 eval_kwargs = {'aug_ref': None, 'aug_times': 0}
-train_model(model, dataloader, optimizer, criterion, n_epochs=10,
+train_model(model, dataloader, optimizer, criterion, n_epochs=3,
 eval_args=eval_args, eval_kwargs=eval_kwargs)
 
 torch.save(model.state_dict(), os.path.join(path, "vit.pth"))
