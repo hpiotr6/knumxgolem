@@ -29,14 +29,12 @@ print(device)
 
 model = torchvision.models.vit_b_16(pretrained=True)
 model.heads.head = torch.nn.Identity()
-'''
+
 for param in model.parameters():
-    param.
     param.requires_grad = False
 for param in model.encoder.layers.encoder_layer_11.parameters():
-
     param.requires_grad = True
-'''
+
 #model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b0', pretrained=True)
 #model.classifier.fc = torch.nn.Identity()
 
@@ -252,9 +250,11 @@ def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=No
     return acc
 
 def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, eval_args=None, eval_kwargs=None):
+  model.eval()
   if eval_args is not None:
     acc = evaluate_dataset(*eval_args, **eval_kwargs)
     print('Before training accuracy:', acc.item())
+  model.train()
 
   for i in range(n_epochs):
       running_loss = 0.0
@@ -279,11 +279,13 @@ def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, 
           triplet_loss.backward()
           optimizer.step()
           running_loss += triplet_loss.item()
-
+      
+      model.eval()
       print(f"Epoch: {i} loss: {running_loss/len(dataloader)}")
       if eval_args is not None:
         acc = evaluate_dataset(*eval_args, **eval_kwargs)
         print('accuracy:', acc.item())
+      model.train()
 
 '''
 noise_pos = torch.rand(4, 3, 224, 224)
