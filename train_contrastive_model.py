@@ -11,14 +11,6 @@ import numpy as np
 
 from skimage import io
 
-print('bef')
-for path in os.listdir(os.path.join(path, 'cropped_val')):
-  try:
-    image = io.imread(path)
-  except:
-    print(path)
-print('after')
-
 import torch
 import pandas as pd
 import os
@@ -124,7 +116,6 @@ class Tripplet(Dataset):
 
         return triplets
 
-print(path)
 print('Ref dataset n_samples:', len(os.listdir(os.path.join(path, 'cropped_ref'))))
 print('Valid dataset n_samples:', len(os.listdir(os.path.join(path, 'cropped_val'))))
 
