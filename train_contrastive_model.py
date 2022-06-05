@@ -187,7 +187,7 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   predicted_labels = []
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    vals, indices = torch.topk(distances, largest=False)
+    vals, indices = torch.topk(distances, K, largest=False)
     labels_ref = labels_ref[indices]
 
     pred_label = torch.mean(vals / sum(vals) * labels_ref)
