@@ -46,6 +46,39 @@ class ReferenceDataset(Dataset):
         )
 
 
+class ValDataset(Dataset):
+    def __init__(self, img_dir, annotations_file_path, transform=None):
+        self.transform = transform
+        self.img_dir = img_dir
+        self.annotations = pd.read_csv(annotations_file_path)
+        self.annotations["area"][self.annotations["area"] > 1000]
+        self.annotations[transform]
+        self.labels_group_ind = self.__init_labels_group()
+
+    def __len__(self):
+        return len(self.annotations)
+
+    def __getitem__(self, idx):
+        annotations_row = self.annotations.iloc[idx]
+        img_path = os.path.join(self.img_dir, annotations_row["crop_file_name"])
+        label = annotations_row["category_id"]
+        image = cv.imread(img_path)
+
+        image = cv.cvtColor(image, cv.COLOR_BGR2RGB)
+        if self.transform:
+            image = self.transform(image=image)["image"]
+        return image, label
+
+    def __init_labels_group(self):
+        return (
+            self.annotations.reset_index()
+            .groupby(by="category_id")["index"]
+            .apply(list)
+            .reset_index(name="category_indices")["category_indices"]
+            .to_dict()
+        )
+
+
 class Tripplet(Dataset):
     def __init__(self, dataset) -> None:
         super().__init__()
