@@ -49,6 +49,7 @@ class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
         self.transform = transform
         self.img_dir = img_dir
+        print(img_dir)
         self.annotations = pd.read_csv(annotations_file_path)
 
         self.delete_invalid()
@@ -169,8 +170,6 @@ if __name__ == '__main__':
     model = model.to(device)
     checkpoint = torch.load(os.path.join(path, "vit.pth"))
     model.load_state_dict(checkpoint)
-
-
 
     transform_ref = A.Compose(
     [
