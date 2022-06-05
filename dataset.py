@@ -58,6 +58,9 @@ class ValDataset(Dataset):
 
     def _filter_annotations(self):
         self.annotations = self.annotations[self.annotations["area"] > 1000]
+        self.annotations = self.annotations[
+            self.annotations["category_id"].isin(self.ref_group_label.keys())
+        ]
 
     def __len__(self):
         return len(self.annotations)
