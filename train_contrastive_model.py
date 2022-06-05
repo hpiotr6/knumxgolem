@@ -361,7 +361,7 @@ dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
 
 eval_args = (model, dataloader_ref, dataloader_val, loss)
 eval_kwargs = {'aug_ref': None, 'aug_times': 0}
-train_model(model, dataloader, optimizer, criterion, n_epochs=10,
+train_model(model, dataloader, optimizer, criterion, n_epochs=3,
 eval_args=eval_args, eval_kwargs=eval_kwargs)
 
 torch.save(model.state_dict(), os.path.join(path, "vit.pth"))
