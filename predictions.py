@@ -56,6 +56,7 @@ if __name__ == '__main__':
         param.requires_grad = True
 
     model = model.to(device)
-    model.load_state_dict(os.path.join(path, "vit.pth"))
+    checkpoint = torch.load(os.path.join(path, "vit.pth"))
+    model.load_state_dict(checkpoint)
 
 
