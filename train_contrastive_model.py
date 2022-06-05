@@ -19,6 +19,10 @@ from torch.utils.data import Dataset, DataLoader
 import cv2 as cv
 from skimage import io
 
+path = 'datas'
+loss = torch.nn.MSELoss()
+criterion = nn.TripletMarginWithDistanceLoss(distance_function=loss)
+
 class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
         self.transform = transform
@@ -143,10 +147,6 @@ transform_Gauss = A.Compose(
         ToTensorV2(),
     ]
 )
-
-path = 'datas'
-loss = torch.nn.MSELoss()
-criterion = nn.TripletMarginWithDistanceLoss(distance_function=loss)
 
 ref_dataset = ReferenceDataset(
     img_dir=os.path.join(path, "cropped_ref"),
