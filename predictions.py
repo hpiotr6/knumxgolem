@@ -7,6 +7,7 @@ import albumentations as A
 import pandas as pd
 from skimage import io
 import cv2 as cv
+import json
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
@@ -111,7 +112,7 @@ class ValDataset(Dataset):
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
         
-        self._filter_annotations()
+        # self._filter_annotations()
         
         #self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
@@ -150,13 +151,20 @@ class ValDataset(Dataset):
 
 if __name__ == '__main__':
     loss = torch.nn.MSELoss()
-    path = 'datas'
+    path = 'cropped_images'
     IMAGE_HEIGHT = 224
     IMAGE_WIDTH = 224
-    path_ref_images = os.path.join(path, "cropped_ref")
-    path_ref_csv = os.path.join(path, "ref1_merged_with_crops.csv")
-    path_val_images = os.path.join(path, "cropped_val")
-    path_val_csv = os.path.join(path, "val_merged_with_crops.csv")
+
+    path_ref_images = os.path.join('datas', "cropped_ref")
+    path_ref_csv = os.path.join('datas', "ref1_merged_with_crops.csv")
+    #path_ref_images = os.path.join(path, "reference_images_part2")
+    #path_ref_csv = os.path.join(path, "reference_images_part2.csv")
+
+    path_val_images = os.path.join(path, "images_part1_test") # images_part2_test
+    path_val_csv = os.path.join(path, "images_part1_test.csv") # images_part2_test.csv
+
+    PATH = 'datas/solution_images_part1_valid.json'  # prob change path here
+    #PATH = 'datas/solution_images_part2_valid.json'  # prob change path here
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
@@ -203,8 +211,8 @@ if __name__ == '__main__':
     )
     print(len(val_dataset))
 
-    dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
-    dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
+    dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=False)
+    dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=False)
 
     eval_args = (model, dataloader_ref, dataloader_val, loss)
     eval_kwargs = {'aug_ref': None, 'aug_times': 0}
@@ -217,7 +225,12 @@ if __name__ == '__main__':
 
     print(val_dataset.annotations.shape)
     print(preds)
-    import json
 
-
+    with open(PATH) as json_data:
+        data = json.load(json_data)
+    annotations = data['annotations']
+    for i in range(len(preds)):
+        annotations[i]['category_id'] = preds[i]
+    with open(PATH, mode='w') as json_data:
+        json.dump(data, json_data)
 
