@@ -22,7 +22,7 @@ import torch.optim as optim
 
 path = 'datas'
 loss = torch.nn.MSELoss()
-criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss)
+criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss, margin=0.5)
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
