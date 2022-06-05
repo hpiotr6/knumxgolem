@@ -280,7 +280,7 @@ def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, 
       print(f"Epoch: {i} loss: {running_loss/len(dataloader)}")
       if eval_args is not None:
         acc = evaluate_dataset(*eval_args, **eval_kwargs)
-        print('accuracy:', acc)
+        print('accuracy:', acc.item())
 
 '''
 noise_pos = torch.rand(4, 3, 224, 224)
