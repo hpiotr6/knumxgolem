@@ -185,7 +185,7 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   # also works for predicting only a batch - can be used during training
   predicted_labels = []
   for emb_val in embeddings_val:
-    distances = [distance(emb_val, emb_ref) for emb_ref in embeddings_ref]
+    distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
     predicted_labels.append(labels_ref[torch.argmin(distances)])
   return predicted_labels
 
