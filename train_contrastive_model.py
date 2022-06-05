@@ -188,6 +188,8 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
     vals, indices = torch.topk(distances, K, largest=False)
+    print(indices)
+    print(labels_ref)
     labels_ref = torch.index_select(labels_ref, 0, indices)
 
     pred_label = torch.mean(vals / sum(vals) * labels_ref)
@@ -305,8 +307,8 @@ val_dataset = ReferenceDataset(
 )
 print(len(val_dataset))
 
-dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
-dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
+dataloader_val = DataLoader(val_dataset, batch_size=8, shuffle=True)
+dataloader_ref = DataLoader(ref_dataset, batch_size=8, shuffle=True)
 distance = torch.nn.MSELoss()
 
 eval_args = (model, dataloader_ref, dataloader_val, distance)
