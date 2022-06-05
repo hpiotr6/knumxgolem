@@ -124,6 +124,7 @@ class Tripplet(Dataset):
 
         return triplets
 
+print(path)
 print('Ref dataset n_samples:', len(os.listdir(os.path.join(path, 'cropped_ref'))))
 print('Valid dataset n_samples:', len(os.listdir(os.path.join(path, 'cropped_val'))))
 
