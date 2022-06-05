@@ -226,7 +226,7 @@ if __name__ == '__main__':
     print(val_dataset.annotations.shape)
     print(preds)
 
-    with open(PATH) as json_data:
+    with open('public_evaluation/images_part1_test_public.json') as json_data:
         data = json.load(json_data)
     annotations = data['annotations']
     for i in range(len(preds)):
