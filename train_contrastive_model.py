@@ -21,7 +21,7 @@ from skimage import io
 
 path = 'datas'
 loss = torch.nn.MSELoss()
-criterion = nn.TripletMarginWithDistanceLoss(distance_function=loss)
+criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss)
 
 class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
