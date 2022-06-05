@@ -1,7 +1,6 @@
 import os
 
 path = 'datas'
-K = 3
 
 import albumentations as A
 import torchvision
@@ -185,58 +184,32 @@ def get_augmented_embeddings(model, images, aug, aug_times=0):
 def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   # also works for predicting only a batch - can be used during training
   predicted_labels = []
-  print('shape:', labels_ref.shape)
   for emb_val in embeddings_val:
     distances = torch.Tensor([distance(emb_val, emb_ref) for emb_ref in embeddings_ref])
-    vals, indices = torch.topk(distances, K, largest=False)
-    pred_label = torch.index_select(labels_ref, 0, indices)
-
-    print(distances)
-    print(labels_ref)
-    print('='*50)
-    print(indices)
-    print(torch.index_select(distances, 0, indices))
-
-    print('='*50)
-
-    print(vals)
-    print(indices)
-    print('='*50)
-    print(sum(vals))
-    print(vals / sum(vals))
-    print(pred_label)
-    print('='*50)
-    print(torch.mean(vals / sum(vals) * pred_label))
-    print(torch.round(torch.mean(vals / sum(vals) * pred_label)))
-    pred_label = torch.mean(vals / sum(vals) * pred_label)
-    pred_label = torch.round(pred_label)
-    predicted_labels.append(pred_label)
-    raise
+    predicted_labels.append(labels_ref[torch.argmin(distances)])
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
-  with torch.no_grad():
-    embeddings_ref = []
-    labels_ref = []
-    for imgs, labels in dataloader_ref:
-        imgs = imgs.to(device)
-        embeddings_ref.extend(model(imgs).detach().cpu())
-        labels_ref.extend(labels)
+  embeddings_ref = []
+  labels_ref = []
+  for imgs, labels in dataloader_ref:
+    imgs = imgs.to(device)
+    embeddings_ref.extend(model(imgs).detach().cpu())
+    labels_ref.extend(labels)
 
-        if aug_ref is not None:
-            embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
-            labels_ref.extend(list(labels) * aug_times)
+    if aug_ref is not None:
+      embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
+      labels_ref.extend(list(labels) * aug_times)
 
-    embeddings_val = []
-    labels_val = []
-    for imgs, labels in dataloader_val:
-        imgs = imgs.to(device)
-        embeddings_val.extend(model(imgs).detach().cpu())
-        labels_val.extend(labels)
+  embeddings_val = []
+  labels_val = []
+  for imgs, labels in dataloader_val:
+    imgs = imgs.to(device)
+    embeddings_val.extend(model(imgs).detach().cpu())
+    labels_val.extend(labels)
 
-    return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
+  return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
 
-'''
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
   if aug_times > 0:
     batch_ref = torch.cat([batch_ref, get_augmented_embeddings(model, batch_ref, aug_ref, aug_times=0)])
@@ -248,7 +221,6 @@ def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance
   predictions = get_predictions(embeddings_ref, embeddings_val, labels_ref, distance)
   acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
   return acc
-'''
 
 def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
@@ -327,8 +299,8 @@ val_dataset = ReferenceDataset(
 )
 print(len(val_dataset))
 
-dataloader_val = DataLoader(val_dataset, batch_size=8, shuffle=True)
-dataloader_ref = DataLoader(ref_dataset, batch_size=8, shuffle=True)
+dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
+dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
 distance = torch.nn.MSELoss()
 
 eval_args = (model, dataloader_ref, dataloader_val, distance)
