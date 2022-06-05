@@ -256,6 +256,7 @@ def predict_dataset(model, ref_dataset, dataloader_val, distance, aug_ref=None, 
     unique_labels = set(labels_ref)
     ref_dict = {}
     for label in unique_labels:
+        print('='*50)
         print(label, type(label))
         print(labels_ref)
         embeds = [embd for lab, embd in zip(labels_ref, embeddings) if lab == label]
