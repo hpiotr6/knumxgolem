@@ -41,6 +41,7 @@ class ReferenceDataset(Dataset):
                 valid_indices.append(True)
             except:
                 valid_indices.append(False)
+                print('Path does not work:', img_path)
         print('Deleted imaages:', len(valid_indices) - sum(valid_indices))
         self.annotations = self.annotations[pd.Series(valid_indices)]
 
