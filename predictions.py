@@ -5,6 +5,7 @@ from torch.utils.data import Dataset, DataLoader
 from albumentations.pytorch import ToTensorV2
 import albumentations as A
 import pandas as pd
+from skimage import io
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
@@ -49,7 +50,6 @@ class ReferenceDataset(Dataset):
     def __init__(self, img_dir, annotations_file_path, transform=None):
         self.transform = transform
         self.img_dir = img_dir
-        print(img_dir)
         self.annotations = pd.read_csv(annotations_file_path)
 
         self.delete_invalid()
