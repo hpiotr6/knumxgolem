@@ -109,15 +109,26 @@ class ReferenceDataset(Dataset):
         )
 
 class ValDataset(Dataset):
-    def __init__(self, img_dir, annotations_file_path, transform=None):
+    def __init__(self, img_dir, annotations_file_path, ref_group_label, transform=None):
+        self.ref_group_label = ref_group_label
         self.transform = transform
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
+        
+        self._filter_annotations()
+        
+        self.annotations[transform]
+        self.labels_group_ind = self.__init_labels_group()
+
+    def _filter_annotations(self):
         length = len(self.annotations)
         self.annotations = self.annotations[self.annotations["area"] > 2000]
-        print(f'Dropped {length - len(self.annotations)} as anomalies')
-        #self.annotations[transform]
-        self.labels_group_ind = self.__init_labels_group()
+        print(f'Dropped {length - len(self.annotations)} as outliers')
+        length = len(self.annotations)
+        self.annotations = self.annotations[
+            self.annotations["category_id"].isin(self.ref_group_label.keys())
+        ]
+        print(f'Dropped {length - len(self.annotations)} as wrong classes')
 
     def __len__(self):
         return len(self.annotations)
@@ -340,6 +351,7 @@ transform_val = A.Compose(
 val_dataset = ValDataset(
     img_dir=os.path.join(path, "cropped_val"),
     annotations_file_path=os.path.join(path, "val_merged_with_crops.csv"),
+    ref_group_label=ref_dataset.labels_group_ind,
     transform=transform_val,
 )
 print(len(val_dataset))
