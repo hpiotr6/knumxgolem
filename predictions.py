@@ -218,8 +218,8 @@ if __name__ == '__main__':
     eval_kwargs = {'aug_ref': None, 'aug_times': 0}
 
     with torch.no_grad():
-        acc = evaluate_dataset(*eval_args, **eval_kwargs)
-        print('Before training accuracy:', acc.item())
+        #acc = evaluate_dataset(*eval_args, **eval_kwargs)
+        #print('Before training accuracy:', acc.item())
 
         preds, _ = predict_dataset(model, dataloader_ref, dataloader_val, loss, aug_ref=None, aug_times=0)
 
