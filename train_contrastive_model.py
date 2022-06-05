@@ -279,7 +279,7 @@ def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=No
     acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
     return acc
 
-def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10, eval_args=None, eval_kwargs=None):
+def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=3, eval_args=None, eval_kwargs=None):
   model.eval()
   if eval_args is not None:
     acc = evaluate_dataset(*eval_args, **eval_kwargs)
