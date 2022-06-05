@@ -27,7 +27,7 @@ criterion = torch.nn.TripletMarginWithDistanceLoss(distance_function=loss)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(device)
 
-model = torchvision.models.vit_b_16(pretrained=True)
+model = torchvision.models.vit_b_32(pretrained=True)
 model.heads.head = torch.nn.Identity()
 for param in model.parameters():
     param.requires_grad = False
