@@ -30,8 +30,11 @@ print(device)
 #model = torchvision.models.vit_b_16(pretrained=True)
 #model.heads.head = torch.nn.Identity()
 
-model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b0', pretrained=True)
-model.classifier.fc = torch.nn.Identity()
+#model = torch.hub.load('NVIDIA/DeepLearningExamples:torchhub', 'nvidia_efficientnet_b0', pretrained=True)
+#model.classifier.fc = torch.nn.Identity()
+
+model = torchvision.models.resnext50_32x4d(pretrained=True)
+model.fc = torch.nn.Identity()
 
 model = model.to(device)
 
@@ -196,25 +199,26 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
-  embeddings_ref = []
-  labels_ref = []
-  for imgs, labels in dataloader_ref:
-    imgs = imgs.to(device)
-    embeddings_ref.extend(model(imgs).detach().cpu())
-    labels_ref.extend(labels)
+  with torch.no_grad():
+    embeddings_ref = []
+    labels_ref = []
+    for imgs, labels in dataloader_ref:
+        imgs = imgs.to(device)
+        embeddings_ref.extend(model(imgs).detach().cpu())
+        labels_ref.extend(labels)
 
-    if aug_ref is not None:
-      embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
-      labels_ref.extend(list(labels) * aug_times)
+        if aug_ref is not None:
+            embeddings_ref.extend(get_augmented_embeddings(model, imgs, aug_ref, aug_times))
+            labels_ref.extend(list(labels) * aug_times)
 
-  embeddings_val = []
-  labels_val = []
-  for imgs, labels in dataloader_val:
-    imgs = imgs.to(device)
-    embeddings_val.extend(model(imgs).detach().cpu())
-    labels_val.extend(labels)
+    embeddings_val = []
+    labels_val = []
+    for imgs, labels in dataloader_val:
+        imgs = imgs.to(device)
+        embeddings_val.extend(model(imgs).detach().cpu())
+        labels_val.extend(labels)
 
-  return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
+    return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
 
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
   if aug_times > 0:
