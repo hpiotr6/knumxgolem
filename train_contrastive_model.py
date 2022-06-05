@@ -136,9 +136,8 @@ class ValDataset(Dataset):
     def __init_labels_group(self):
         return (
             self.annotations.reset_index()
-            .groupby(by="category_id")["index"]
+            .groupby("category_id")["index"]
             .apply(list)
-            .reset_index(name="category_indices")["category_indices"]
             .to_dict()
         )
 
