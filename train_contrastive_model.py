@@ -202,11 +202,13 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
       labels_ref.extend(list(labels) * aug_times)
 
   embeddings_val = []
+  labels_val = []
   for imgs, labels in dataloader_val:
     imgs = imgs.to(device)
     embeddings_val.extend(model(imgs).detach().cpu())
+    labels_val.extend(labels)
 
-  return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance)
+  return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
 
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
   if aug_times > 0:
@@ -222,9 +224,8 @@ def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance
 
 def evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
   with torch.no_grad():
-    predictions = predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
-    labels = dataloader_val.labels
-    acc = sum([pred == label for pred, label in zip(predictions, labels)]) / len(labels)
+    predictions, labels_val = predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
+    acc = sum([pred == label for pred, label in zip(predictions, labels_val)]) / len(labels_val)
     return acc
 
 def train_model(model, dataloader, optimizer, criterion, aug=None, n_epochs=10):
