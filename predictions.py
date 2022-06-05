@@ -159,6 +159,9 @@ if __name__ == '__main__':
     path_val_images = os.path.join(path, "images_part1_test") # images_part2_test
     path_val_csv = os.path.join(path, "images_part1_test.csv") # images_part2_test.csv
 
+    PATH = 'datas/solution_images_part1_valid.json'  # prob change path here
+    #PATH = 'datas/solution_images_part2_valid.json'  # prob change path here
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
 
@@ -219,7 +222,6 @@ if __name__ == '__main__':
     print(val_dataset.annotations.shape)
     print(preds)
 
-    PATH = 'datas/images_part1_valid.json'  # prob change path here
     with open(PATH) as json_data:
         data = json.load(json_data)
     annotations = data['annotations']
