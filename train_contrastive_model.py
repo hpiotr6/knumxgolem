@@ -191,18 +191,25 @@ def get_predictions(embeddings_ref, embeddings_val, labels_ref, distance):
     vals, indices = torch.topk(distances, K, largest=False)
     pred_label = torch.index_select(labels_ref, 0, indices)
 
+    print(distances)
+    print(labels_ref)
+    torch.index_select(distances, 0, indices)
+
+    print('='*50)
+
     print(vals)
     print(indices)
-    print()
+    print('='*50)
     print(sum(vals))
     print(vals / sum(vals))
     print(pred_label)
-
+    print('='*50)
     print(torch.mean(vals / sum(vals) * pred_label))
     print(torch.round(torch.mean(vals / sum(vals) * pred_label)))
     pred_label = torch.mean(vals / sum(vals) * pred_label)
     pred_label = torch.round(pred_label)
     predicted_labels.append(pred_label)
+    raise
   return predicted_labels
 
 def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0):
