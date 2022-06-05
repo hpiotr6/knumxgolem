@@ -7,6 +7,7 @@ import albumentations as A
 import pandas as pd
 from skimage import io
 import cv2 as cv
+import json
 
 def get_augmented_embeddings(model, images, aug, aug_times=0):
   return [model(aug(images)).detach().cpu() for _ in range(aug_times)]
@@ -217,7 +218,13 @@ if __name__ == '__main__':
 
     print(val_dataset.annotations.shape)
     print(preds)
-    import json
 
-
+    PATH = 'datas/images_part1_valid.json'  # prob change path here
+    with open(PATH) as json_data:
+        data = json.load(json_data)
+    annotations = data['annotations']
+    for i in range(len(preds)):
+        annotations[i]['category_id'] = preds[i]
+    with open(PATH, mode='w') as json_data:
+        json.dump(data, json_data)
 
