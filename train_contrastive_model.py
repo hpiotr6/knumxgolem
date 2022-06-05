@@ -214,7 +214,7 @@ def predict_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=Non
     embeddings_val.extend(model(imgs).detach().cpu())
     labels_val.extend(labels)
 
-  return get_predictions(embeddings_ref, embeddings_val, labels_ref, distance), labels_val
+  return get_predictions(embeddings_ref, embeddings_val, torch.Tensor(labels_ref), distance), torch.Tensor(labels_val)
 
 def evaluate_batch(model, batch_ref, batch_val, labels_ref, labels_val, distance, aug_ref=None, aug_times=0):
   if aug_times > 0:
