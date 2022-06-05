@@ -180,6 +180,13 @@ if __name__ == '__main__':
 )
 
     ref_dataset = ReferenceDataset(
+    img_dir=os.path.join(path, "cropped_ref"),
+    annotations_file_path=os.path.join(path, "ref1_merged_with_crops.csv"),
+    transform=transform_ref,
+)
+    print(len(ref_dataset))
+
+    ref_dataset = ReferenceDataset(
         img_dir=path_ref_images,
         annotations_file_path=path_ref_csv,
         transform=transform_ref,
