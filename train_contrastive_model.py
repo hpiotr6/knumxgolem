@@ -197,7 +197,6 @@ def matplotlib_imshow(img, one_channel=False):
 IMAGE_HEIGHT = 224
 IMAGE_WIDTH = 224
 transform_Gauss = A.Compose([   
-        A.Resize(height=224, width=224),
         A.Rotate(p=0.5),
         A.Transpose(p=0.5),
         A.OpticalDistortion(p=0.5),
@@ -207,6 +206,8 @@ transform_Gauss = A.Compose([
         A.HueSaturationValue(hue_shift_limit=10, sat_shift_limit=10, val_shift_limit=20, always_apply=False, p=0.5),
         A.RandomFog(p=0.5),
         A.RandomToneCurve(scale=0.1, always_apply=False, p=0.5),
+        A.Resize(height=224, width=224),
+        A.Normalize()
     ])
 
 ref_dataset = ReferenceDataset(
@@ -214,6 +215,9 @@ ref_dataset = ReferenceDataset(
     annotations_file_path=os.path.join(path, "ref1_merged_with_crops.csv"),
     transform=transform_Gauss,
 )
+
+pairs = [_ for _ in ref_dataset]
+print(len(pairs))
 
 triplet_dataset = Tripplet(ref_dataset)
 x, labels = triplet_dataset[0]
