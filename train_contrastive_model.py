@@ -219,7 +219,7 @@ ref_dataset = ReferenceDataset(
 )
 
 pairs = [_ for _ in ref_dataset]
-print(len(pairs))
+print('ref pairs:', len(pairs))
 
 triplet_dataset = Tripplet(ref_dataset)
 x, labels = triplet_dataset[0]
