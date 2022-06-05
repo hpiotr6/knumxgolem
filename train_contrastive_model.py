@@ -42,7 +42,7 @@ class ReferenceDataset(Dataset):
             except:
                 valid_indices.append(False)
                 print('Path does not work:', img_path)
-        print('Deleted imaages:', len(valid_indices) - sum(valid_indices))
+        print('Deleted images:', len(valid_indices) - sum(valid_indices))
         self.annotations = self.annotations[pd.Series(valid_indices)]
 
 
@@ -294,7 +294,7 @@ print(len(val_dataset))
 
 dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
 dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
-distance = None
+distance = torch.nn.MSELoss()
 
 evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
 
