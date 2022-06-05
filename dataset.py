@@ -47,13 +47,17 @@ class ReferenceDataset(Dataset):
 
 
 class ValDataset(Dataset):
-    def __init__(self, img_dir, annotations_file_path, transform=None):
+    def __init__(self, img_dir, annotations_file_path, ref_group_label, transform=None):
+        self.ref_group_label = ref_group_label
         self.transform = transform
         self.img_dir = img_dir
         self.annotations = pd.read_csv(annotations_file_path)
-        self.annotations["area"][self.annotations["area"] > 1000]
+        self._filter_annotations()
         self.annotations[transform]
         self.labels_group_ind = self.__init_labels_group()
+
+    def _filter_annotations(self):
+        self.annotations = self.annotations[self.annotations["area"] > 1000]
 
     def __len__(self):
         return len(self.annotations)
@@ -72,9 +76,8 @@ class ValDataset(Dataset):
     def __init_labels_group(self):
         return (
             self.annotations.reset_index()
-            .groupby(by="category_id")["index"]
+            .groupby("category_id")["index"]
             .apply(list)
-            .reset_index(name="category_indices")["category_indices"]
             .to_dict()
         )
 
