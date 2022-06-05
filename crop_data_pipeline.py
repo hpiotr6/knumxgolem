@@ -5,12 +5,12 @@ import cv2 as cv
 from tqdm import tqdm
 
 
-TARGET = "reference_images_part1"  # DO EDYCJI
+TARGET = "images_part1_test"  # DO EDYCJI
 
 
 CROPPED_DIR = "cropped_images"
-JSON_PATH = f"public_dataset/{TARGET}.json"
-IMG_DIR = f"public_dataset/{TARGET}"
+JSON_PATH = f"datas/public_evaluation/public_evaluation/{TARGET}_public.json"
+IMG_DIR = f"datas/public_evaluation/public_evaluation/{TARGET}"
 
 TARGET_DIR = os.path.join(CROPPED_DIR, TARGET)
 # os.makedirs(TARGET_DIR)
