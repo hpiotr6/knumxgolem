@@ -130,7 +130,6 @@ dmypy.json
 
 .DS_Store
 .vscode/
-cropped_ref/
 poetry.lock
 public_dataset/
 pyproject.toml
