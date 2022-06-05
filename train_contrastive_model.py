@@ -297,7 +297,8 @@ dataloader_val = DataLoader(val_dataset, batch_size=4, shuffle=True)
 dataloader_ref = DataLoader(ref_dataset, batch_size=4, shuffle=True)
 distance = torch.nn.MSELoss()
 
-evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
+acc = evaluate_dataset(model, dataloader_ref, dataloader_val, distance, aug_ref=None, aug_times=0)
+print('accuracy:', acc)
 
 torch.cuda.empty_cache()
 
