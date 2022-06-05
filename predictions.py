@@ -151,13 +151,13 @@ class ValDataset(Dataset):
 
 if __name__ == '__main__':
     loss = torch.nn.MSELoss()
-    path = 'datas'
+    path = 'cropped_images'
     IMAGE_HEIGHT = 224
     IMAGE_WIDTH = 224
-    path_ref_images = os.path.join(path, "cropped_ref")
-    path_ref_csv = os.path.join(path, "ref1_merged_with_crops.csv")
-    path_val_images = os.path.join(path, "cropped_val")
-    path_val_csv = os.path.join(path, "val_merged_with_crops.csv")
+    path_ref_images = os.path.join(path, "reference_images_part2")
+    path_ref_csv = os.path.join(path, "reference_images_part2.csv")
+    path_val_images = os.path.join(path, "images_part1_test") # images_part2_test
+    path_val_csv = os.path.join(path, "images_part1_test.csv") # images_part2_test.csv
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(device)
