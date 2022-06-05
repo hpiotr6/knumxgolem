@@ -256,6 +256,8 @@ def predict_dataset(model, ref_dataset, dataloader_val, distance, aug_ref=None, 
     unique_labels = set(labels_ref)
     ref_dict = {}
     for label in unique_labels:
+        print(label, type(label))
+        print(labels_ref)
         embeds = [embd for lab, embd in zip(labels_ref, embeddings) if lab == label]
         ref_dict[label] = torch.mean(embeds).detach().cpu()
 
